@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="simpleMessenger" default="compile" basedir=".">
+    
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="lib.dir" value="libs" />
+    <property name="test.dir" value="test"/>
+    
+    <path id="project.classpath" >
+        <pathelement location="${build.dir}"/>
+    </path>
+
+    <path id="testing.classpath">
+        <pathelement location="${lib.dir}/junit.jar" />
+        <pathelement location="${lib.dir}/mockito.jar" />
+        <pathelement location="${build.dir}"/>
+        <pathelement location="${build.dir}/messenger.properties"/>
+    </path>
+    
+    <target name="compile" description="Compile project.">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}"
+               classpathref="project.classpath"
+               debug="true" deprecation="true"
+               includeantruntime="false"/>
+        <copy file="${src.dir}/messenger.properties" todir="${build.dir}"/>
+    </target>
+    
+    <target name="run-server" depends="compile" description="Run server.">
+        <input>
+            <handler classname="org.apache.tools.ant.input.DefaultInputHandler"/>
+        </input>
+        <java classname="rmimessenger.server.ConsoleServer" fork="true" classpathref="project.classpath" />
+    </target>
+
+    <target name="test-server" depends="compile" description="Run all tests for the server implementation.">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${test.dir}" destdir="${build.dir}">
+            <classpath refid="testing.classpath"/>
+        </javac>
+        <copy file="${src.dir}/messenger.properties" todir="${build.dir}"/>
+        
+        <mkdir dir="tmp/rawtestoutput"/>
+        
+        <junit haltonfailure="false" printsummary="true">
+            <classpath path="${build.dir}">
+                <path refid="testing.classpath" />
+            </classpath>
+
+            <batchtest todir="tmp/rawtestoutput">
+                <fileset dir="test"/>
+                <formatter type="plain"/>
+            </batchtest>
+        </junit>
+    </target>
+    
+    <target name="run-client" depends="compile" description="Run client.">
+        <input>
+            <handler classname="org.apache.tools.ant.input.DefaultInputHandler"/>
+        </input>
+        <java classname="rmimessenger.client.ConsoleClient" fork="true" classpathref="project.classpath" />
+    </target>
+
+    <target name="test-client" depends="compile" description="Run all tests for the client implementation.">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${test.dir}" destdir="${build.dir}">
+            <classpath refid="testing.classpath"/>
+        </javac>
+        <copy file="${src.dir}/messenger.properties" todir="${build.dir}"/>
+        
+        <mkdir dir="tmp/rawtestoutput"/>
+        
+        <junit haltonfailure="false" printsummary="true">
+            <classpath path="${build.dir}">
+                <path refid="testing.classpath" />
+            </classpath>
+
+            <batchtest todir="tmp/rawtestoutput">
+                <fileset dir="test"/>
+                <formatter type="plain"/>
+            </batchtest>
+        </junit>
+    </target>
+    
+    <target name="rebuild" depends="clean, compile" description="Clean and build products." />
+    
+    <target name="clean" description="Clean build products.">
+        <delete dir="${build.dir}"/>
+    </target>
+    
+</project>
