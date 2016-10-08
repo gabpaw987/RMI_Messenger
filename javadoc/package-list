@@ -1,0 +1,7 @@
+rmimessenger.client
+rmimessenger.general
+rmimessenger.general.commands
+rmimessenger.general.exceptions
+rmimessenger.general.responses
+rmimessenger.general.responses.notifications
+rmimessenger.server
